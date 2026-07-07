@@ -49,46 +49,47 @@
 ## Шаг 1: Подготовка компонента каталога (15 минут)
 
    1. Сгенерировать компонент списка курсов / задач:
-   
-   ng g c components/course-list
-   
+```bash
+  ng g c components/course-list
+```
    2. Открыть course-list.component.ts, импортировать ChangeDetectionStrategy и активировать режим OnPush:
+```typescript
+  import { Component, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
+  interface Course {
+    id: number;
+    title: string;
+    status: 'active' | 'completed' | 'archived';
+    hours: number;
+  }
    
-   import { Component, OnInit, ChangeDetectionStrategy, signal } from '@angular/core';
-   interface Course {
-     id: number;
-     title: string;
-     status: 'active' | 'completed' | 'archived';
-     hours: number;
-   }
+  @Component({
+    selector: 'app-course-list',
+    templateUrl: './course-list.component.html',
+    styleUrl: './course-list.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
+  })
+  export class CourseListComponent implements OnInit {
+    // Реактивный Сигнал для хранения массива данных
+    courses = signal<Course[]>([]);
    
-   @Component({
-     selector: 'app-course-list',
-     templateUrl: './course-list.component.html',
-     styleUrl: './course-list.component.scss',
-     changeDetection: ChangeDetectionStrategy.OnPush
-   })export class CourseListComponent implements OnInit {
-     // Реактивный Сигнал для хранения массива данных
-     courses = signal<Course[]>([]);
+    // Сигнал для текущего фильтра статуса
+    currentFilter = signal<string>('all');
    
-     // Сигнал для текущего фильтра статуса
-     currentFilter = signal<string>('all');
-   
-     ngOnInit(): void {
-       // Имитируем получение базовой части данных с REST API
-       this.courses.set([
-         { id: 101, title: 'Разработка веб-приложений на Angular 22', status: 'active', hours: 32 },
-         { id: 102, title: 'Основы баз данных (PostgreSQL)', status: 'completed', hours: 64 },
-         { id: 103, title: 'Проектирование систем (Запросы и Архитектура)', status: 'active', hours: 16 },
-         { id: 104, title: 'Администрирование Linux (Архивный курс)', status: 'archived', hours: 48 }
-       ]);
-     }
-   }
-   
-   
+    ngOnInit(): void {
+      // Имитируем получение базовой части данных с REST API
+      this.courses.set([
+        { id: 101, title: 'Разработка веб-приложений на Angular 22', status: 'active', hours: 32 },
+        { id: 102, title: 'Основы баз данных (PostgreSQL)', status: 'completed', hours: 64 },
+        { id: 103, title: 'Проектирование систем (Запросы и Архитектура)', status: 'active', hours: 16 },
+        { id: 104, title: 'Администрирование Linux (Архивный курс)', status: 'archived', hours: 48 }
+      ]);
+    }
+  }
+``` 
+
 ## Шаг 2: Реализация логики фильтрации (15 минут)
 Поскольку мы работаем в OnPush-компоненте, напишем метод, который будет менять значение фильтра, и современную стрелочную функцию (фича шаблонов Angular 22) для фильтрации элементов прямо «на лету».
-
+```typescript
   // Внутри класса CourseListComponent
   setFilter(filterValue: string): void {
     this.currentFilter.set(filterValue);
@@ -100,57 +101,57 @@
     if (this.currentFilter() === 'all') return true;
     return courseStatus === this.currentFilter();
   }
+```
 
 ## Шаг 3: Написание шаблона с использованием нового Control Flow (35 минут)
 
    1. Открыть course-list.component.html и реализовать интерфейс управления и вывода:
+```html
+  <div class="catalog-container">
+    <h3>Каталог учебных курсов (Семестр 5)</h3>
    
-   <div class="catalog-container">
-     <h3>Каталог учебных курсов (Семестр 5)</h3>
+    <!-- Кнопки управления фильтрацией (Event Binding) -->
+    <div class="filter-actions">
+      <button (click)="setFilter('all')" [class.active]="currentFilter() === 'all'">Все</button>
+      <button (click)="setFilter('active')" [class.active]="currentFilter() === 'active'">Активные</button>
+      <button (click)="setFilter('completed')" [class.active]="currentFilter() === 'completed'">Завершенные</button>
+    </div>
    
-     <!-- Кнопки управления фильтрацией (Event Binding) -->
-     <div class="filter-actions">
-       <button (click)="setFilter('all')" [class.active]="currentFilter() === 'all'">Все</button>
-       <button (click)="setFilter('active')" [class.active]="currentFilter() === 'active'">Активные</button>
-       <button (click)="setFilter('completed')" [class.active]="currentFilter() === 'completed'">Завершенные</button>
-     </div>
+    <div class="courses-grid">
+      <!-- Цикл @for с обязательным параметром track. Применяем стрелочный предикат v22 -->
+      @for (course of courses(); track course.id; let idx = $index; let isFirst = $first) {
    
-     <div class="courses-grid">
-       <!-- Цикл @for с обязательным параметром track. Применяем стрелочный предикат v22 -->
-       @for (course of courses(); track course.id; let idx = $index; let isFirst = $first) {
+        <!-- Выводим только те элементы, которые подходят под фильтр -->
+        @if (isMatch(course.status)) {
+          <div class="course-card" [class.featured-card]="isFirst">
    
-         <!-- Выводим только те элементы, которые подходят под фильтр -->
-         @if (isMatch(course.status)) {
-           <div class="course-card" [class.featured-card]="isFirst">
+            <span class="index-badge">#{{ idx + 1 }}</span>
+            <h4>{{ course.title }}</h4>
+            <p>Объем: {{ course.hours }} акад. часов</p>
    
-             <span class="index-badge">#{{ idx + 1 }}</span>
-             <h4>{{ course.title }}</h4>
-             <p>Объем: {{ course.hours }} акад. часов</p>
-   
-             <!-- Демонстрация синтаксиса @switch -->
-             @switch (course.status) {
-               @case ('active') {
-                 <span class="status green">В процессе изучения</span>
-               }
-               @case ('completed') {
-                 <span class="status blue">Курс пройден</span>
-               }
-               @default {
-                 <span class="status gray">В архиве</span>
-               }
-             }
-           </div>
-         }
-   
-       } @empty {
-         <!-- Автоматический блок на случай отсутствия курсов в массиве -->
-         <div class="empty-state">
-           <p>Список курсов пуст или данные не загружены с бэкенда.</p>
-         </div>
-       }
-     </div>
-   </div>
-   
+            <!-- Демонстрация синтаксиса @switch -->
+            @switch (course.status) {
+              @case ('active') {
+                <span class="status green">В процессе изучения</span>
+              }
+              @case ('completed') {
+                <span class="status blue">Курс пройден</span>
+              }
+              @default {
+                <span class="status gray">В архиве</span>
+              }
+            }
+          </div>
+        }
+      } @empty {
+        <!-- Автоматический блок на случай отсутствия курсов в массиве -->
+        <div class="empty-state">
+          <p>Список курсов пуст или данные не загружены с бэкенда.</p>
+        </div>
+      }
+    </div>
+  </div>
+```
    
 ## Шаг 4: Интеграция и стилизация (15 минут)
 
@@ -160,8 +161,8 @@
 
 ## Шаг 5: Тестирование динамики (10 минут)
 
-   1. Проверить работу фильтров в браузере. Студенты должны увидеть, как при кликах на кнопки карточки мгновенно исчезают и появляются, доказывая реактивность OnPush без перезагрузки страницы.
-   2. Эксперимент: Попросить студентов временно очистить массив в ngOnInit (this.courses.set([])) и убедиться, что на экране автоматически отрендерился блок @empty.
+   1. Проверить работу фильтров в браузере. Нужно увидеть, как при кликах на кнопки карточки мгновенно исчезают и появляются, доказывая реактивность OnPush без перезагрузки страницы.
+   2. Эксперимент: Временно очистить массив в ngOnInit (this.courses.set([])) и убедиться, что на экране автоматически отрендерился блок @empty.
 
 ------------------------------
 ## Домашнее задание к Неделе 4
@@ -170,5 +171,4 @@
    2. Изучить теоретический материал по теме Angular Signals. Разобраться, в чем фундаментальная разница между базовым signal(), вычисляемым computed() и отслеживающим effect().
 
 ------------------------------
-Переходим к Неделе 4, где мы совершим глубокое погружение в Signals (функции .set(), .update(), концепции computed и effect)?
 
