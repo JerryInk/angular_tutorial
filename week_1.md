@@ -134,41 +134,41 @@
 ```
    2. Открыть welcome-panel.component.ts и добавить базовые свойства для проверки работы нового шаблонизатора:
 ```typescript
-   import { Component } from '@angular/core';
+  import { Component } from '@angular/core';
    
-   @Component({
-     selector: 'app-welcome-panel',
-     templateUrl: './welcome-panel.component.html',
-     styleUrl: './welcome-panel.component.scss'
-   })export class WelcomePanelComponent {
-     // Имитация состояния бэкенда для проверки множественного @case
-     appState = 'maintenance'; 
-     studentConfig = { name: 'Иван', group: 'ИТ-301' };
-   }
+  @Component({
+    selector: 'app-welcome-panel',
+    templateUrl: './welcome-panel.component.html',
+    styleUrl: './welcome-panel.component.scss'
+  })export class WelcomePanelComponent {
+    // Имитация состояния бэкенда для проверки множественного @case
+    appState = 'maintenance'; 
+    studentConfig = { name: 'Иван', group: 'ИТ-301' };
+  }
 ```
    3. Открыть welcome-panel.component.html и написать разметку с использованием сгруппированного @switch (фича Angular 22):
 ```html
-   <div class="panel-card">
-     <h2>Система электронного обучения (Angular 22)</h2>
-     <p>Студент: {{ studentConfig.name }} (Группа: {{ studentConfig.group }})</p>
+  <div class="panel-card">
+    <h2>Система электронного обучения (Angular 22)</h2>
+    <p>Студент: {{ studentConfig.name }} (Группа: {{ studentConfig.group }})</p>
    
-     <!-- Демонстрация синтаксиса Angular 22 с группировкой кейсов -->
-     @switch (appState) {
-       @case ('loading'; 'maintenance') {
-         <div class="status-alert processing">
-           <p>Внимание: Базовый бэкенд находится на обслуживании или загружается.</p>
-         </div>
-       }
-       @case ('ready') {
-         <div class="status-alert success">
-           <p>Соединение с REST API успешно установлено!</p>
-         </div>
-       }
-       @default {
-         <p>Статус подсистемы не определен.</p>
-       }
-     }
-   </div>
+    <!-- Демонстрация синтаксиса Angular 22 с группировкой кейсов -->
+    @switch (appState) {
+      @case ('loading'; 'maintenance') {
+        <div class="status-alert processing">
+          <p>Внимание: Базовый бэкенд находится на обслуживании или загружается.</p>
+        </div>
+      }
+      @case ('ready') {
+        <div class="status-alert success">
+          <p>Соединение с REST API успешно установлено!</p>
+        </div>
+      }
+      @default {
+        <p>Статус подсистемы не определен.</p>
+      }
+    }
+  </div>
 ```
    
 ## Шаг 5: Монтирование и запуск (15 минут)
