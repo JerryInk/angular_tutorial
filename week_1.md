@@ -144,7 +144,8 @@
     selector: 'app-welcome-panel',
     templateUrl: './welcome-panel.component.html',
     styleUrl: './welcome-panel.component.scss'
-  })export class WelcomePanelComponent {
+  })
+   export class WelcomePanelComponent {
     // Имитация состояния бэкенда для проверки множественного @case
     appState = 'maintenance'; 
     studentConfig = { name: 'Иван', group: 'ИТ-301' };
