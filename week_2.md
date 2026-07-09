@@ -128,7 +128,7 @@
       <!-- Вывод обычной переменной -->
       <p>Счетчик кликов: {{ clickCount }}</p>
       <!-- Event Binding (click) -->
-      <button (button) (click)="badIncrement()">Нажать (Обычная переменная)</button>
+      <button (click)="badIncrement()">Нажать (Обычная переменная)</button>
     </div>
   </div>
 ```
