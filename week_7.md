@@ -156,7 +156,7 @@
     // Внедряем хранилище. Компонент имеет доступ только к публичным методам и Read-Only сигналам
     protected store = inject(TaskStoreService);
   }
-
+```
 Открыть шаблон task-dashboard.component.html:
 ```html
   <div class="dashboard-box">
