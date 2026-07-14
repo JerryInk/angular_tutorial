@@ -143,7 +143,8 @@
     templateUrl: './course-detail.component.html',
     styleUrl: './course-detail.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
-  })export class CourseDetailComponent implements OnInit {
+  })
+  export class CourseDetailComponent implements OnInit {
     // Название инпута строго совпадает с ":courseId" в файле app.routes.ts
     courseId = input.required<string>();
   
