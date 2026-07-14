@@ -148,6 +148,8 @@ CRUD (Create, Read, Update, Delete) — это четыре базовые фу�
   })
   export class CourseManagerComponent implements OnInit {
     private apiService = inject(CourseApiService);
+
+    private destroyRef = inject(DestroyRef); 
   
     // Реактивное состояние UI на Сигналах
     courses = signal<Course[]>([]);
@@ -160,7 +162,7 @@ CRUD (Create, Read, Update, Delete) — это четыре базовые фу�
     loadAllCourses(): void {
       this.apiService.getCourses().pipe(
         // Защита от утечки, если компонент закроется до ответа сервера
-        takeUntilDestroyed() 
+        takeUntilDestroyed(destroyRef) 
       ).subscribe({
         next: (data) => {
           this.courses.set(data);
