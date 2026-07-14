@@ -76,6 +76,14 @@
     level: this.fb.control<string>('beginner', { nonNullable: true })
   });
 
+  formValueSignal = toSignal(this.courseForm.valueChanges, { 
+    initialValue: this.courseForm.value 
+  });
+  
+  formStatusSignal = toSignal(this.courseForm.statusChanges, { 
+    initialValue: this.courseForm.status 
+  });
+
   // Метод обработки отправки формы
   onSubmit(): void {
     if (this.courseForm.invalid) return;
@@ -127,12 +135,15 @@
 Добавим в подвал шаблона блок, наглядно демонстрирующий работу Signal Forms в Angular 22. Будем выводить JSON текущих значений формы в реальном времени.
 ```html
 <div class="debug-panel">
-  <h4>Отладка состояния Reactive Form (OnPush):</h4>
-  <!-- Читаем значение формы напрямую через современный нативный Сигнал valueChanges -->
-  <pre>Значение полей: {{ courseForm.value | json }}</pre>
+  <h4>Отладка состояния Reactive Form (Zoneless + OnPush):</h4>
+  
+  <!-- Читаем наше сконвертированное значение как Сигнал -->
+  <pre>Значение полей: {{ formValueSignal() | json }}</pre>
   
   <p>Статус валидности формы: 
-    <span [class.valid-text]="courseForm.valid">{{ courseForm.status }}</span>
+    <span [class.valid-text]="formStatusSignal() === 'VALID'">
+      {{ formStatusSignal() }}
+    </span>
   </p>
 </div>
 ```
